@@ -14,7 +14,7 @@ class PatientModel(BaseModel):
     mrn: str  # Medical Record Number e.g., MRN-84729
     first_name: str
     last_name: str
-    dob: str  # YYYY-MM-DD
+    dob: Optional[str] = None  # YYYY-MM-DD
     age: Optional[int] = None
     gender: str = "Female"
     blood_type: Optional[str] = "O+"

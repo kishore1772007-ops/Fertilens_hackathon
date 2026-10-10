@@ -3,7 +3,7 @@ Clinical patient management routes (Phase B & Timeline Engine).
 """
 import uuid
 import re
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from typing import List, Optional, Dict, Any
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
@@ -23,6 +23,21 @@ from app.core.logging_config import logger
 
 router = APIRouter(prefix="/patients", tags=["Patients"])
 
+def _calculate_age(dob_val: Optional[str]) -> Optional[int]:
+    if not dob_val:
+        return None
+    try:
+        birth_date = date.fromisoformat(str(dob_val).split("T")[0])
+        today = date.today()
+        age = today.year - birth_date.year - ((today.month, today.day) < (birth_date.month, birth_date.day))
+        return max(0, age)
+    except Exception:
+        try:
+            birth_year = int(str(dob_val).split("-")[0])
+            return max(0, date.today().year - birth_year)
+        except Exception:
+            return None
+
 def _serialize(doc: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     if not doc:
         return None
@@ -30,6 +45,8 @@ def _serialize(doc: Optional[Dict[str, Any]]) -> Optional[Dict[str, Any]]:
     if "_id" in d:
         d["_id"] = str(d["_id"])
         d["id"] = d["_id"]
+    if d.get("age") is None and d.get("dob"):
+        d["age"] = _calculate_age(d.get("dob"))
     return d
 
 @router.get("", summary="List clinical patients with filtering & search")
@@ -134,6 +151,15 @@ async def create_patient(
     doc_data["status"] = "active"
     doc_data["created_at"] = now
     doc_data["updated_at"] = now
+
+    # Convert DOB to Age or Age to DOB
+    if payload.dob:
+        calc_age = _calculate_age(payload.dob)
+        doc_data["age"] = payload.age if payload.age is not None else calc_age
+    elif payload.age is not None:
+        doc_data["age"] = payload.age
+        est_year = now.year - payload.age
+        doc_data["dob"] = f"{est_year}-01-01"
 
     # Encrypt and persist
     encrypted = encrypt_doc(doc_data, "patients")
@@ -409,6 +435,11 @@ async def update_patient(
         raise HTTPException(status_code=404, detail="Patient profile not found")
 
     update_dict = {k: v for k, v in payload.model_dump().items() if v is not None}
+    if "dob" in update_dict and update_dict["dob"] and "age" not in update_dict:
+        update_dict["age"] = _calculate_age(update_dict["dob"])
+    elif "age" in update_dict and update_dict["age"] is not None and ("dob" not in update_dict or not update_dict["dob"]):
+        est_year = datetime.now(timezone.utc).year - update_dict["age"]
+        update_dict["dob"] = f"{est_year}-01-01"
     update_dict["updated_at"] = datetime.now(timezone.utc)
 
     # Re-encrypt updated fields

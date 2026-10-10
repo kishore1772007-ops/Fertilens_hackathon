@@ -9,7 +9,8 @@ class PartnerInfoSchema(BaseModel):
 class PatientCreate(BaseModel):
     first_name: str
     last_name: str
-    dob: str
+    dob: Optional[str] = None
+    age: Optional[int] = None
     gender: str = "Female"
     blood_type: Optional[str] = "O+"
     email: Optional[EmailStr] = None
@@ -28,6 +29,7 @@ class PatientUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
     dob: Optional[str] = None
+    age: Optional[int] = None
     gender: Optional[str] = None
     blood_type: Optional[str] = None
     email: Optional[EmailStr] = None
@@ -50,9 +52,9 @@ class PatientResponse(BaseModel):
     mrn: str
     first_name: str
     last_name: str
-    dob: str
+    dob: Optional[str] = None
     age: Optional[int] = None
-    gender: str
+    gender: str = "Female"
     blood_type: Optional[str] = None
     email: Optional[str] = None
     phone: Optional[str] = None

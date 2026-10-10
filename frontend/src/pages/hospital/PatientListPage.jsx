@@ -29,13 +29,29 @@ export default function PatientListPage() {
   const [page, setPage] = useState(1);
   const [total, setTotal] = useState(0);
 
+  const calculateAge = (dobString) => {
+    if (!dobString) return '';
+    const birthDate = new Date(dobString);
+    if (isNaN(birthDate.getTime())) return '';
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age >= 0 ? age : 0;
+  };
+
+  const defaultDob = '1996-05-15';
+
   // New Patient Modal Form State
   const [showAddModal, setShowAddModal] = useState(false);
   const [formData, setFormData] = useState({
     first_name: '',
     last_name: '',
-    dob: '1995-05-15',
     gender: 'Female',
+    dob: defaultDob,
+    age: calculateAge(defaultDob),
     blood_type: 'B+',
     email: '',
     phone: '',
@@ -78,8 +94,13 @@ export default function PatientListPage() {
     e.preventDefault();
     setSubmitting(true);
     try {
+      const ageNum = formData.age !== '' && formData.age !== undefined
+        ? parseInt(formData.age, 10)
+        : (formData.dob ? calculateAge(formData.dob) : null);
       const payload = {
         ...formData,
+        age: ageNum,
+        gender: formData.gender || 'Female',
         amh_level: formData.amh_level ? parseFloat(formData.amh_level) : null,
         fsh_level: formData.fsh_level ? parseFloat(formData.fsh_level) : null,
         antral_follicle_count: formData.antral_follicle_count ? parseInt(formData.antral_follicle_count, 10) : null
@@ -89,8 +110,9 @@ export default function PatientListPage() {
       setFormData({
         first_name: '',
         last_name: '',
-        dob: '1995-05-15',
         gender: 'Female',
+        dob: defaultDob,
+        age: calculateAge(defaultDob),
         blood_type: 'B+',
         email: '',
         phone: '',
@@ -324,6 +346,75 @@ export default function PatientListPage() {
                     className="w-full mt-1 px-3 py-2 text-xs border border-blue-100 bg-[#f8faff] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all"
                     placeholder="e.g. Patel"
                   />
+                </div>
+              </div>
+
+              {/* Gender, Date of Birth & Converted Age */}
+              <div className="grid grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-bold text-slate-700">Gender</label>
+                  <select
+                    value={formData.gender}
+                    onChange={(e) => setFormData({ ...formData, gender: e.target.value })}
+                    className="w-full mt-1 px-3 py-2 text-xs border border-blue-100 bg-[#f8faff] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-slate-700 font-medium"
+                  >
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-bold text-slate-700">Date of Birth (DOB)</label>
+                  <input
+                    type="date"
+                    required
+                    value={formData.dob}
+                    max={new Date().toISOString().split('T')[0]}
+                    onChange={(e) => {
+                      const newDob = e.target.value;
+                      const calculatedAge = calculateAge(newDob);
+                      setFormData({
+                        ...formData,
+                        dob: newDob,
+                        age: calculatedAge
+                      });
+                    }}
+                    className="w-full mt-1 px-3 py-2 text-xs border border-blue-100 bg-[#f8faff] rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-slate-700 font-medium"
+                  />
+                </div>
+                <div>
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-bold text-slate-700">Age</label>
+                    <span className="text-[10px] text-blue-600 font-semibold bg-blue-50 px-1.5 py-0.5 rounded">Auto from DOB</span>
+                  </div>
+                  <div className="relative mt-1">
+                    <input
+                      type="number"
+                      min="1"
+                      max="120"
+                      value={formData.age !== undefined && formData.age !== '' ? formData.age : calculateAge(formData.dob)}
+                      onChange={(e) => {
+                        const newAge = e.target.value;
+                        const ageNum = parseInt(newAge, 10);
+                        let estimatedDob = formData.dob;
+                        if (!isNaN(ageNum) && ageNum >= 0) {
+                          const estYear = new Date().getFullYear() - ageNum;
+                          const currentMD = formData.dob && formData.dob.length >= 10 ? formData.dob.substring(4) : '-01-01';
+                          estimatedDob = `${estYear}${currentMD}`;
+                        }
+                        setFormData({
+                          ...formData,
+                          age: newAge,
+                          dob: estimatedDob
+                        });
+                      }}
+                      className="w-full px-3 py-2 text-xs border border-blue-100 bg-blue-50/40 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 focus:bg-white transition-all text-slate-900 font-bold"
+                      placeholder="e.g. 29"
+                    />
+                    <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] text-slate-400 font-medium pointer-events-none">
+                      yrs
+                    </span>
+                  </div>
                 </div>
               </div>
 
