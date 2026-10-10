@@ -80,6 +80,7 @@ export function AppRouter() {
           <Route path="patients/:patientId" element={<PatientDetailsPage />} />
           <Route path="patients/:patientId/records" element={<MedicalRecordsPage />} />
           <Route path="patients/:patientId/upload" element={<DocumentUploadPage />} />
+          <Route path="upload" element={<DocumentUploadPage />} />
           <Route path="patients/:patientId/ai-history" element={<AIHistorySearchPage />} />
           <Route path="patients/:patientId/timeline" element={<PatientTimelinePage />} />
           <Route path="patients/:patientId/brief" element={<ConsultationBriefPage />} />

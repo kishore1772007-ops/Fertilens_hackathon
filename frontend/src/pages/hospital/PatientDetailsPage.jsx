@@ -47,7 +47,7 @@ export default function PatientDetailsPage() {
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-3">
-        <RefreshCw className="w-8 h-8 text-teal-600 animate-spin" />
+        <RefreshCw className="w-8 h-8 text-blue-600 animate-spin" />
         <p className="text-xs text-slate-500 font-medium">Loading Patient 360 profile...</p>
       </div>
     );
@@ -61,7 +61,7 @@ export default function PatientDetailsPage() {
         <p className="text-xs text-slate-500">{error || 'Patient record could not be found.'}</p>
         <Link
           to={ROUTES.HOSPITAL.PATIENTS}
-          className="inline-flex items-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold"
+          className="inline-flex items-center px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-full text-xs font-semibold"
         >
           Return to Patient Roster
         </Link>
@@ -75,11 +75,11 @@ export default function PatientDetailsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="space-y-1">
           <div className="flex items-center gap-2 text-xs text-slate-500">
-            <Link to={ROUTES.HOSPITAL.PATIENTS} className="hover:text-teal-600">
+            <Link to={ROUTES.HOSPITAL.PATIENTS} className="hover:text-blue-600">
               Patients
             </Link>
             <span>/</span>
-            <span className="font-mono text-slate-700">{patient.patient_id}</span>
+            <span className="font-mono text-slate-800 font-semibold">{patient.patient_id}</span>
           </div>
           <h1 className="text-2xl font-bold tracking-tight text-slate-900">
             {patient.first_name} {patient.last_name}
@@ -87,24 +87,24 @@ export default function PatientDetailsPage() {
         </div>
 
         {/* Quick action buttons */}
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2.5">
           <Link
             to={ROUTES.HOSPITAL.patientTimeline(patientId)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 shadow-sm transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-full hover:bg-blue-50/50 shadow-xs transition-colors"
           >
-            <Activity className="w-3.5 h-3.5 text-teal-600" />
-            Timeline Engine
+            <Activity className="w-3.5 h-3.5 text-blue-600" />
+            Timeline View
           </Link>
           <Link
             to={ROUTES.HOSPITAL.patientRecords(patientId)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 shadow-sm transition-colors"
+            className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-700 bg-white border border-slate-200 rounded-full hover:bg-blue-50/50 shadow-xs transition-colors"
           >
-            <FileText className="w-3.5 h-3.5 text-teal-600" />
+            <FileText className="w-3.5 h-3.5 text-blue-600" />
             Medical Records
           </Link>
           <Link
             to={ROUTES.HOSPITAL.patientBrief(patientId)}
-            className="inline-flex items-center gap-1.5 px-3.5 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl shadow-sm transition-colors"
+            className="inline-flex items-center gap-1.5 px-5 py-2 text-xs font-semibold text-white bg-blue-600 hover:bg-blue-700 active:scale-[0.98] rounded-full shadow-md shadow-blue-500/20 transition-colors"
           >
             <Sparkles className="w-3.5 h-3.5" />
             Generate Brief
@@ -113,9 +113,9 @@ export default function PatientDetailsPage() {
       </div>
 
       {/* Patient Header Card */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-7 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div className="bg-white rounded-3xl border border-blue-100/80 p-6 sm:p-7 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div className="flex items-center gap-4">
-          <div className="w-16 h-16 rounded-2xl bg-teal-100/80 text-teal-800 font-extrabold flex items-center justify-center text-xl shadow-xs">
+          <div className="w-16 h-16 rounded-2xl bg-blue-100/80 text-blue-700 font-extrabold flex items-center justify-center text-xl shadow-xs">
             {patient.first_name?.[0]}
             {patient.last_name?.[0]}
           </div>
@@ -139,25 +139,25 @@ export default function PatientDetailsPage() {
         <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 flex flex-col gap-1.5 text-xs text-slate-600">
           <div className="flex items-center gap-2">
             <Mail className="w-3.5 h-3.5 text-slate-400" />
-            <span>{patient.email || 'Email encrypted at rest'}</span>
+            <span>{patient.email || 'Email on file'}</span>
           </div>
           <div className="flex items-center gap-2">
             <Phone className="w-3.5 h-3.5 text-slate-400" />
-            <span>{patient.phone || 'Phone encrypted at rest'}</span>
+            <span>{patient.phone || 'Phone on file'}</span>
           </div>
           <div className="flex items-center gap-2">
             <MapPin className="w-3.5 h-3.5 text-slate-400" />
-            <span className="line-clamp-1">{patient.address || 'Address encrypted at rest'}</span>
+            <span className="line-clamp-1">{patient.address || 'Address on file'}</span>
           </div>
         </div>
       </div>
 
       {/* Reproductive Indicators Stripe */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
-        <div className="bg-gradient-to-br from-teal-50/70 to-white rounded-3xl border border-teal-100 p-6 shadow-sm space-y-2">
+        <div className="bg-gradient-to-br from-blue-50/70 to-white rounded-3xl border border-blue-100 p-6 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-teal-700">Anti-Müllerian Hormone</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-800 font-semibold">AMH</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-700">Anti-Müllerian Hormone</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold">AMH</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-slate-900">{patient.amh_level ?? '—'}</span>
@@ -169,7 +169,7 @@ export default function PatientDetailsPage() {
         <div className="bg-gradient-to-br from-indigo-50/70 to-white rounded-3xl border border-indigo-100 p-6 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-xs font-bold uppercase tracking-wider text-indigo-700">Follicle Stimulating Hormone</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-semibold">FSH</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-800 font-semibold">FSH</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-slate-900">{patient.fsh_level ?? '—'}</span>
@@ -178,10 +178,10 @@ export default function PatientDetailsPage() {
           <p className="text-xs text-slate-500">Cycle Day 2-3 baseline pituitary signal</p>
         </div>
 
-        <div className="bg-gradient-to-br from-sky-50/70 to-white rounded-3xl border border-sky-100 p-6 shadow-sm space-y-2">
+        <div className="bg-gradient-to-br from-blue-50/70 to-white rounded-3xl border border-blue-100 p-6 shadow-sm space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-sky-700">Antral Follicle Count</span>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-sky-100 text-sky-800 font-semibold">AFC</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-blue-700">Antral Follicle Count</span>
+            <span className="text-xs px-2.5 py-0.5 rounded-full bg-blue-100 text-blue-800 font-semibold">AFC</span>
           </div>
           <div className="flex items-baseline gap-2">
             <span className="text-3xl font-extrabold text-slate-900">{patient.antral_follicle_count ?? '—'}</span>

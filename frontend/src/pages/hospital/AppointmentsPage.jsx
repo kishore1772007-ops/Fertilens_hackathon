@@ -106,18 +106,18 @@ export default function AppointmentsPage() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Clinical Appointment Schedule</h1>
-            <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+            <span className="px-3 py-0.5 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/70">
               {total} Consultations
             </span>
           </div>
-          <p className="text-sm text-slate-500 mt-1">
-            IVF Monitoring, Baseline Scans, Embryology Consultations & Trigger Schedules
+          <p className="text-xs sm:text-sm text-slate-500 mt-1">
+            IVF Monitoring, Baseline Scans, Embryology Consultations &amp; Trigger Schedules
           </p>
         </div>
 
         <button
           onClick={() => setShowScheduleModal(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full text-xs font-bold shadow-md shadow-blue-500/20 active:scale-95 transition-all"
         >
           <Plus className="w-4 h-4" />
           Schedule Appointment
@@ -125,16 +125,16 @@ export default function AppointmentsPage() {
       </div>
 
       {/* Filter Row */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex items-center justify-between gap-4">
-        <div className="flex items-center gap-2">
+      <div className="bg-white rounded-2xl border border-blue-100 p-4 shadow-[0_2px_12px_rgba(37,99,235,0.04)] flex items-center justify-between gap-4">
+        <div className="flex items-center gap-2 flex-wrap">
           {['', 'scheduled', 'completed', 'cancelled'].map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-semibold capitalize transition-colors ${
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold capitalize transition-all active:scale-95 ${
                 statusFilter === st
-                  ? 'bg-teal-600 text-white shadow-xs'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200/80'
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-blue-50/70 text-blue-700 hover:bg-blue-100/90 border border-blue-100'
               }`}
             >
               {st || 'All Appointments'}
@@ -341,7 +341,7 @@ export default function AppointmentsPage() {
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="px-4 py-2 text-xs font-semibold text-white bg-teal-600 hover:bg-teal-700 rounded-xl disabled:opacity-50"
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-full shadow-md shadow-blue-500/20 active:scale-95 disabled:opacity-50"
                 >
                   {submitting ? 'Scheduling...' : 'Confirm Appointment'}
                 </button>

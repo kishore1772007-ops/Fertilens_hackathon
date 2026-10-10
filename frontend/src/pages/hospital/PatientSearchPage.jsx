@@ -62,13 +62,13 @@ export default function PatientSearchPage() {
             <div>
               <label className="text-xs font-semibold text-slate-700">Patient Identifier or Name</label>
               <div className="relative mt-1">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   placeholder="e.g. Priya Sharma, P1001, MRN-1001..."
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                  className="w-full pl-9 pr-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
                 />
               </div>
             </div>
@@ -80,7 +80,7 @@ export default function PatientSearchPage() {
                 placeholder="e.g. PCOS, Diminished Ovarian Reserve, Oligospermia..."
                 value={diagnosis}
                 onChange={(e) => setDiagnosis(e.target.value)}
-                className="w-full mt-1 px-3 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-500"
+                className="w-full mt-1 px-3.5 py-2.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500"
               />
             </div>
           </div>
@@ -94,7 +94,7 @@ export default function PatientSearchPage() {
                 placeholder="e.g. 1.0"
                 value={minAmh}
                 onChange={(e) => setMinAmh(e.target.value)}
-                className="w-full mt-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                className="w-full mt-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
@@ -106,7 +106,7 @@ export default function PatientSearchPage() {
                 placeholder="e.g. 5.0"
                 value={maxAmh}
                 onChange={(e) => setMaxAmh(e.target.value)}
-                className="w-full mt-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20"
+                className="w-full mt-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20"
               />
             </div>
 
@@ -115,7 +115,7 @@ export default function PatientSearchPage() {
               <select
                 value={stage}
                 onChange={(e) => setStage(e.target.value)}
-                className="w-full mt-1 px-3 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-teal-500/20 text-slate-700"
+                className="w-full mt-1 px-3.5 py-2 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 text-slate-700"
               >
                 <option value="">Any Stage</option>
                 <option value="Initial Consultation">Initial Consultation</option>
@@ -137,7 +137,7 @@ export default function PatientSearchPage() {
                 key={cond}
                 type="button"
                 onClick={() => handleQuickCondition(cond)}
-                className="px-2.5 py-1 text-xs font-medium bg-slate-100 hover:bg-slate-200/80 text-slate-700 rounded-full transition-colors"
+                className="px-3 py-1 text-xs font-medium bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-full transition-colors"
               >
                 {cond}
               </button>
@@ -156,17 +156,17 @@ export default function PatientSearchPage() {
                 setResults([]);
                 setSearched(false);
               }}
-              className="px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700"
+              className="px-4 py-2 text-xs font-medium text-slate-500 hover:text-slate-700 rounded-full"
             >
               Clear Filters
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-5 py-2.5 bg-teal-600 hover:bg-teal-700 text-white rounded-xl text-xs font-semibold shadow-sm transition-colors flex items-center gap-2 disabled:opacity-50"
+              className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white rounded-full text-xs font-semibold shadow-md shadow-blue-500/20 transition-colors flex items-center gap-2 disabled:opacity-50"
             >
               {loading ? <RefreshCw className="w-3.5 h-3.5 animate-spin" /> : <Search className="w-3.5 h-3.5" />}
-              Execute Search
+              Search Patients
             </button>
           </div>
         </form>
@@ -187,18 +187,18 @@ export default function PatientSearchPage() {
               return (
                 <div
                   key={pId}
-                  className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-4"
+                  className="bg-white rounded-3xl border border-blue-100/80 p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between gap-4"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-teal-100 text-teal-800 font-bold flex items-center justify-center text-xs">
+                      <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs">
                         {(patient.first_name?.[0] || 'P')}
                         {(patient.last_name?.[0] || '')}
                       </div>
                       <div>
                         <Link
                           to={ROUTES.HOSPITAL.patientDetails(pId)}
-                          className="font-bold text-slate-900 hover:text-teal-600 text-sm"
+                          className="font-bold text-slate-900 hover:text-blue-600 text-sm"
                         >
                           {patient.first_name} {patient.last_name}
                         </Link>
@@ -210,7 +210,7 @@ export default function PatientSearchPage() {
                     <StatusBadge status={patient.status || 'active'} size="xs" />
                   </div>
 
-                  <div className="p-3 bg-slate-50/70 rounded-xl border border-slate-100 space-y-1.5 text-xs">
+                  <div className="p-3.5 bg-blue-50/40 rounded-2xl border border-blue-100/70 space-y-1.5 text-xs">
                     <div>
                       <span className="font-semibold text-slate-700">Diagnosis:</span>{' '}
                       <span className="text-slate-900">{patient.primary_diagnosis || 'Infertility Evaluation'}</span>
@@ -219,7 +219,7 @@ export default function PatientSearchPage() {
                       <span className="font-semibold text-slate-700">Stage:</span>{' '}
                       <span className="text-slate-600">{patient.treatment_stage || 'Active'}</span>
                     </div>
-                    <div className="flex items-center gap-4 text-teal-700 font-semibold pt-0.5">
+                    <div className="flex items-center gap-4 text-blue-700 font-semibold pt-0.5">
                       <span>AMH: {patient.amh_level ?? '—'} ng/mL</span>
                       <span>FSH: {patient.fsh_level ?? '—'} mIU/mL</span>
                       <span>AFC: {patient.antral_follicle_count ?? '—'}</span>
@@ -229,21 +229,21 @@ export default function PatientSearchPage() {
                   <div className="flex items-center justify-end gap-2 pt-1 border-t border-slate-100">
                     <Link
                       to={ROUTES.HOSPITAL.patientTimeline(pId)}
-                      className="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                      className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                       title="Timeline"
                     >
                       <Activity className="w-4 h-4" />
                     </Link>
                     <Link
                       to={ROUTES.HOSPITAL.patientRecords(pId)}
-                      className="p-1.5 text-slate-500 hover:text-teal-600 hover:bg-teal-50 rounded-lg transition-colors"
+                      className="p-2 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-full transition-colors"
                       title="Records"
                     >
                       <FileText className="w-4 h-4" />
                     </Link>
                     <Link
                       to={ROUTES.HOSPITAL.patientDetails(pId)}
-                      className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold text-teal-700 bg-teal-50 hover:bg-teal-100 rounded-xl border border-teal-200 transition-colors"
+                      className="inline-flex items-center gap-1 px-4 py-1.5 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-full border border-blue-200 transition-colors"
                     >
                       View 360° Profile
                       <ChevronRight className="w-3.5 h-3.5" />
@@ -255,7 +255,7 @@ export default function PatientSearchPage() {
           </div>
         ) : (
           searched && (
-            <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center text-slate-400 space-y-2">
+            <div className="bg-white rounded-3xl border border-blue-100/80 p-12 text-center text-slate-400 space-y-2">
               <Search className="w-8 h-8 mx-auto text-slate-300" />
               <p className="text-xs">No patients matching the specified criteria.</p>
             </div>

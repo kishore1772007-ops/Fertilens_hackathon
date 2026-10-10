@@ -1,8 +1,9 @@
+from typing import Optional
 from fastapi import APIRouter, Depends, Request, Response, HTTPException, status
 from motor.motor_asyncio import AsyncIOMotorDatabase
 from app.core.dependencies import get_db, get_current_user, csrf_protect
 from app.core.limiter import limiter
-from app.schemas.auth import LoginRequest, TokenResponse, UserResponse
+from app.schemas.auth import LoginRequest, TokenResponse, UserResponse, RefreshTokenRequest
 from app.services.auth_service import AuthService
 from app.services.audit_service import log_audit_event
 from app.core.config import settings
@@ -53,6 +54,8 @@ async def hospital_login(
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
+        csrf_token=csrf_token,
         token_type="bearer",
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         user_id=str(user["_id"]),
@@ -105,6 +108,8 @@ async def patient_login(
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
+        csrf_token=csrf_token,
         token_type="bearer",
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         user_id=str(user["_id"]),
@@ -139,6 +144,8 @@ async def login(
 
     return TokenResponse(
         access_token=access_token,
+        refresh_token=refresh_token,
+        csrf_token=csrf_token,
         token_type="bearer",
         expires_in=settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         user_id=str(user["_id"]),
@@ -152,9 +159,12 @@ async def login(
 async def refresh_tokens(
     request: Request,
     response: Response,
+    payload: Optional[RefreshTokenRequest] = None,
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     raw_refresh_token = request.cookies.get("refresh_token")
+    if not raw_refresh_token and payload and payload.refresh_token:
+        raw_refresh_token = payload.refresh_token
     if not raw_refresh_token:
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
@@ -180,6 +190,8 @@ async def refresh_tokens(
         "status": "success",
         "message": "Tokens successfully rotated",
         "access_token": new_access_token,
+        "refresh_token": new_refresh_token,
+        "csrf_token": csrf_token,
         "token_type": "bearer",
         "expires_in": settings.ACCESS_TOKEN_EXPIRE_MINUTES * 60,
         "user": {

@@ -82,13 +82,13 @@ export default function HospitalDashboard() {
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-2xl font-bold tracking-tight text-slate-900">Hospital Clinical Dashboard</h1>
-            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-50 text-teal-700 border border-teal-200">
-              <ShieldCheck className="w-3.5 h-3.5 text-teal-600" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-blue-50 text-blue-700 border border-blue-200/70">
+              <ShieldCheck className="w-3.5 h-3.5 text-blue-600" />
               PHI Encrypted at Rest
             </span>
           </div>
           <p className="text-sm text-slate-500 mt-1">
-            Department of Reproductive Endocrinology & Assisted Reproductive Technology (ART)
+            Department of Reproductive Endocrinology &amp; Assisted Reproductive Technology (ART)
           </p>
         </div>
 
@@ -96,7 +96,7 @@ export default function HospitalDashboard() {
           <button
             onClick={() => fetchDashboardData(true)}
             disabled={refreshing}
-            className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-medium text-slate-700 bg-white border border-slate-200 rounded-xl hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50"
+            className="inline-flex items-center gap-2 px-4 py-2 text-xs font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100/80 border border-blue-200/70 rounded-full transition-all active:scale-95 shadow-2xs disabled:opacity-50"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${refreshing ? 'animate-spin' : ''}`} />
             Refresh Roster
@@ -105,7 +105,7 @@ export default function HospitalDashboard() {
       </div>
 
       {error && (
-        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between text-rose-700 text-sm">
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between text-rose-700 text-sm font-medium">
           <div className="flex items-center gap-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{error}</span>
@@ -126,12 +126,12 @@ export default function HospitalDashboard() {
           value={stats.total_patients}
           subtitle="Assigned clinical profiles"
           icon={Users}
-          color="teal"
+          color="blue"
         />
         <StatCard
-          title="Indexed Documents"
+          title="Diagnostic Records"
           value={stats.indexed_documents}
-          subtitle="PyMuPDF • AES-256 Encrypted"
+          subtitle="Encrypted Scans &amp; Lab Reports"
           icon={FileText}
           color="blue"
         />
@@ -273,15 +273,15 @@ export default function HospitalDashboard() {
       {/* Two-Column Lower Activity Section */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Left: Upcoming Consultations */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div className="bg-white rounded-3xl border border-blue-100/80 p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
-              <Calendar className="w-4 h-4 text-emerald-600" />
-              <h3 className="font-semibold text-slate-900 text-sm">Upcoming Consultations</h3>
+              <Calendar className="w-4 h-4 text-blue-600" />
+              <h3 className="font-bold text-slate-900 text-sm">Upcoming Consultations</h3>
             </div>
             <Link
               to={ROUTES.HOSPITAL.APPOINTMENTS}
-              className="text-xs font-medium text-teal-600 hover:text-teal-700 flex items-center gap-0.5"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
             >
               View all <ChevronRight className="w-3 h-3" />
             </Link>
@@ -292,7 +292,7 @@ export default function HospitalDashboard() {
               data.upcoming_appointments.map((appt) => (
                 <div
                   key={appt.appointment_id || appt._id}
-                  className="p-3.5 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-colors flex items-start justify-between gap-4"
+                  className="p-3.5 rounded-2xl border border-blue-100 bg-blue-50/30 hover:bg-blue-50/50 transition-colors flex items-start justify-between gap-4"
                 >
                   <div className="space-y-1">
                     <p className="font-semibold text-xs text-slate-900">{appt.title}</p>
@@ -315,15 +315,15 @@ export default function HospitalDashboard() {
         </div>
 
         {/* Right: High-Priority Action Items / Follow-ups */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+        <div className="bg-white rounded-3xl border border-blue-100/80 p-6 shadow-sm space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <div className="flex items-center gap-2">
               <AlertCircle className="w-4 h-4 text-amber-500" />
-              <h3 className="font-semibold text-slate-900 text-sm">Priority Clinical Follow-ups</h3>
+              <h3 className="font-bold text-slate-900 text-sm">Priority Clinical Follow-ups</h3>
             </div>
             <Link
               to={ROUTES.HOSPITAL.FOLLOWUPS}
-              className="text-xs font-medium text-teal-600 hover:text-teal-700 flex items-center gap-0.5"
+              className="text-xs font-semibold text-blue-600 hover:text-blue-700 flex items-center gap-0.5"
             >
               View all <ChevronRight className="w-3 h-3" />
             </Link>
@@ -334,7 +334,7 @@ export default function HospitalDashboard() {
               data.priority_followups.map((fol) => (
                 <div
                   key={fol.followup_id || fol._id}
-                  className="p-3.5 rounded-xl border border-amber-100 bg-amber-50/30 hover:bg-amber-50/50 transition-colors flex items-start justify-between gap-4"
+                  className="p-3.5 rounded-2xl border border-amber-100 bg-amber-50/30 hover:bg-amber-50/50 transition-colors flex items-start justify-between gap-4"
                 >
                   <div className="space-y-1">
                     <p className="font-semibold text-xs text-slate-900">{fol.title}</p>
@@ -355,24 +355,24 @@ export default function HospitalDashboard() {
       </div>
 
       {/* Recent Indexed Clinical Documents */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
+      <div className="bg-white rounded-3xl border border-blue-100/80 p-6 shadow-sm space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-slate-100">
           <div className="flex items-center gap-2">
-            <FileCheck className="w-4 h-4 text-teal-600" />
-            <h3 className="font-semibold text-slate-900 text-sm">Recently Indexed Clinical Reports</h3>
+            <FileCheck className="w-4 h-4 text-blue-600" />
+            <h3 className="font-bold text-slate-900 text-sm">Recently Indexed Clinical Reports</h3>
           </div>
-          <span className="text-xs text-slate-400">Streamed with AES-256 in-memory decryption</span>
+          <span className="text-xs text-slate-400">Secure in-memory medical records</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {data?.recent_documents?.map((doc) => (
             <div
               key={doc.document_id || doc._id}
-              className="p-4 rounded-xl border border-slate-100 bg-slate-50/50 hover:bg-slate-50 transition-all flex flex-col justify-between gap-3"
+              className="p-4 rounded-2xl border border-slate-200 bg-slate-50/40 hover:bg-slate-50 transition-all flex flex-col justify-between gap-3"
             >
               <div>
                 <div className="flex items-center justify-between gap-2 mb-1.5">
-                  <span className="text-[11px] font-mono text-teal-700 bg-teal-50 px-2 py-0.5 rounded border border-teal-100">
+                  <span className="text-[11px] font-mono text-blue-700 bg-blue-50 px-2 py-0.5 rounded border border-blue-100">
                     {doc.patient_id}
                   </span>
                   <StatusBadge status={doc.status} size="xs" />
@@ -387,7 +387,7 @@ export default function HospitalDashboard() {
                 </span>
                 <button
                   onClick={() => fileService.viewFile(doc.document_id, doc.original_filename)}
-                  className="inline-flex items-center gap-1 text-teal-600 hover:text-teal-700 font-medium text-xs hover:underline"
+                  className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-semibold text-xs hover:underline"
                 >
                   View PDF <ExternalLink className="w-3 h-3" />
                 </button>

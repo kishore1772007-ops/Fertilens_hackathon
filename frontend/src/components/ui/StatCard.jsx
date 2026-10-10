@@ -5,20 +5,20 @@ export function StatCard({
   value,
   subtitle,
   icon: Icon,
-  color = 'teal', // teal, blue, amber, emerald, rose
+  color = 'blue', // blue, amber, emerald, rose
   onClick,
   className = '',
 }) {
   const colorMap = {
-    teal: {
-      bg: 'bg-teal-50',
-      text: 'text-teal-600',
-      border: 'border-teal-100',
-    },
     blue: {
-      bg: 'bg-sky-50',
-      text: 'text-sky-600',
-      border: 'border-sky-100',
+      bg: 'bg-blue-50',
+      text: 'text-blue-600',
+      border: 'border-blue-100',
+    },
+    teal: {
+      bg: 'bg-blue-50',
+      text: 'text-blue-600',
+      border: 'border-blue-100',
     },
     amber: {
       bg: 'bg-amber-50',
@@ -37,27 +37,27 @@ export function StatCard({
     },
   };
 
-  const scheme = colorMap[color] || colorMap.teal;
+  const scheme = colorMap[color] || colorMap.blue;
 
   return (
     <div
       onClick={onClick}
-      className={`bg-white rounded-2xl p-5 border border-slate-200 shadow-sm transition-all duration-200 ${
-        onClick ? 'cursor-pointer hover:shadow-card-hover hover:border-teal-300' : ''
+      className={`bg-white rounded-2xl p-5 border border-blue-100 shadow-[0_2px_12px_rgba(37,99,235,0.04)] transition-all duration-200 ${
+        onClick ? 'cursor-pointer hover:shadow-card-hover hover:border-blue-300' : ''
       } ${className}`}
     >
       <div className="flex items-center justify-between">
-        <p className="text-xs font-semibold uppercase tracking-wider text-slate-500">{title}</p>
+        <p className="text-xs font-bold uppercase tracking-wider text-slate-400">{title}</p>
         {Icon && (
-          <div className={`p-2.5 rounded-xl ${scheme.bg} ${scheme.text} ${scheme.border} border`}>
+          <div className={`p-2.5 rounded-xl ${scheme.bg} ${scheme.text} ${scheme.border} border shadow-2xs`}>
             <Icon className="w-5 h-5" />
           </div>
         )}
       </div>
       <div className="mt-2 flex items-baseline gap-2">
-        <span className="text-2xl font-bold tracking-tight text-slate-900">{value}</span>
+        <span className="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">{value}</span>
       </div>
-      {subtitle && <p className="mt-1 text-xs text-slate-500">{subtitle}</p>}
+      {subtitle && <p className="mt-1 text-xs text-slate-500 font-medium">{subtitle}</p>}
     </div>
   );
 }

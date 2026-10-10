@@ -9,7 +9,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Query
 from motor.motor_asyncio import AsyncIOMotorDatabase
 
 from app.database.mongodb import get_db
-from app.core.dependencies import get_current_user, require_roles
+from app.core.dependencies import get_current_user, require_roles, require_patient
 from app.core.encryption import (
     encrypt_doc,
     decrypt_doc,
@@ -154,16 +154,243 @@ async def create_patient(
     doc_data["id"] = doc_data["_id"]
     return doc_data
 
+# ----------------- Patient Self Profile & Journey (Phase G) ----------------- #
+
+@router.get("/me", summary="Get authenticated patient profile")
+async def get_patient_profile_me(
+    patient_auth: dict = Depends(require_patient),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    patient_doc = _serialize(patient_auth["patient_doc"])
+    # Resolve attending doctor information if available
+    doctor_info = None
+    if patient_doc.get("assigned_doctor_name"):
+        doctor_info = {
+            "full_name": patient_doc.get("assigned_doctor_name"),
+            "specialty": "Reproductive Endocrinologist & ART Specialist",
+            "department": "Department of Reproductive Medicine"
+        }
+    elif patient_doc.get("assigned_doctor_id"):
+        try:
+            from bson import ObjectId
+            doc_user = await db.users.find_one({"_id": ObjectId(patient_doc["assigned_doctor_id"])})
+            if doc_user:
+                doctor_info = {
+                    "full_name": doc_user.get("full_name"),
+                    "email": doc_user.get("email"),
+                    "specialty": "Reproductive Endocrinologist"
+                }
+        except Exception:
+            pass
+
+    return {
+        "patient": patient_doc,
+        "doctor": doctor_info
+    }
+
+@router.put("/me", summary="Update patient contact, emergency & partner details")
+async def update_patient_profile_me(
+    payload: PatientUpdate,
+    patient_auth: dict = Depends(require_patient),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    patient_id = patient_auth["verified_patient_id"]
+    existing = await db.patients.find_one({"patient_id": patient_id})
+    if not existing:
+        raise HTTPException(status_code=404, detail="Patient profile not found")
+
+    allowed_fields = {"phone", "email", "address", "emergency_contact", "partner"}
+    update_dict = {k: v for k, v in payload.model_dump().items() if k in allowed_fields and v is not None}
+    update_dict["updated_at"] = datetime.now(timezone.utc)
+
+    encrypted_update = encrypt_doc(update_dict, "patients")
+    await db.patients.update_one({"patient_id": patient_id}, {"$set": encrypted_update})
+
+    await log_audit_event(
+        db=db,
+        user_id=str(patient_auth["_id"]),
+        user_email=patient_auth.get("email"),
+        role="patient",
+        action="update_profile",
+        resource="patient",
+        resource_id=patient_id,
+        details={"updated_fields": list(update_dict.keys())}
+    )
+
+    updated_raw = await db.patients.find_one({"patient_id": patient_id})
+    return _serialize(decrypt_doc(updated_raw, "patients"))
+
+@router.get("/me/timeline", summary="Get authenticated patient treatment journey and timeline")
+async def get_patient_timeline_me(
+    patient_auth: dict = Depends(require_patient),
+    db: AsyncIOMotorDatabase = Depends(get_db)
+):
+    patient_id = patient_auth["verified_patient_id"]
+    patient_profile = _serialize(patient_auth["patient_doc"])
+    events = []
+
+    # 1. Medical records
+    raw_recs = await db.medical_records.find({"patient_id": patient_id}).to_list(100)
+    for r in raw_recs:
+        dec = decrypt_doc(r, "medical_records")
+        events.append({
+            "id": dec.get("record_id"),
+            "event_type": "clinical_record",
+            "subtype": dec.get("record_type"),
+            "title": dec.get("title"),
+            "timestamp": dec.get("date"),
+            "summary": dec.get("clinical_summary") or dec.get("notes"),
+            "findings": dec.get("findings"),
+            "plan": dec.get("plan"),
+            "doctor_name": dec.get("doctor_name"),
+            "tags": dec.get("tags", [])
+        })
+
+    # 2. Appointments
+    raw_appts = await db.appointments.find({"patient_id": patient_id}).to_list(50)
+    for a in raw_appts:
+        dec = decrypt_doc(a, "appointments")
+        events.append({
+            "id": dec.get("appointment_id"),
+            "event_type": "appointment",
+            "subtype": dec.get("appointment_type"),
+            "title": dec.get("title"),
+            "timestamp": dec.get("start_time"),
+            "summary": f"Status: {dec.get('status')} • Location: {dec.get('location', 'Clinic')}",
+            "notes": dec.get("notes"),
+            "doctor_name": dec.get("doctor_name"),
+            "status": dec.get("status")
+        })
+
+    # 3. Documents (approved only)
+    raw_docs = await db.documents.find({
+        "patient_id": patient_id,
+        "approved_for_patient": True
+    }).to_list(50)
+    for d in raw_docs:
+        dec = decrypt_doc(d, "documents")
+        events.append({
+            "id": dec.get("document_id"),
+            "event_type": "document",
+            "subtype": dec.get("document_type", "PDF Upload"),
+            "title": dec.get("title"),
+            "timestamp": dec.get("created_at"),
+            "summary": f"File: {dec.get('original_filename')} ({dec.get('status')})",
+            "approved": True,
+            "status": dec.get("status")
+        })
+
+    # 4. Follow-ups
+    raw_fols = await db.followups.find({"patient_id": patient_id}).to_list(50)
+    for f in raw_fols:
+        dec = decrypt_doc(f, "followups")
+        events.append({
+            "id": dec.get("followup_id"),
+            "event_type": "followup",
+            "subtype": dec.get("category"),
+            "title": dec.get("title"),
+            "timestamp": dec.get("due_date"),
+            "summary": dec.get("description"),
+            "priority": dec.get("priority"),
+            "status": dec.get("status")
+        })
+
+    # Sort events chronologically descending
+    events.sort(key=lambda x: str(x.get("timestamp") or ""), reverse=True)
+
+    # Standard IVF / ART Clinical Roadmap Stages
+    standard_stages = [
+        {
+            "id": "stage_1",
+            "name": "Diagnostic Workup & Baseline Evaluation",
+            "short_name": "Workup & Baseline",
+            "description": "Baseline hormone profile (AMH, FSH, LH, E2), ultrasound AFC scan, infectious panels, and fertility history.",
+            "duration": "Cycle Days 1 - 3",
+            "key_actions": ["Transvaginal Ultrasound (AFC)", "Baseline Blood Panels", "Clinical Consultation"]
+        },
+        {
+            "id": "stage_2",
+            "name": "Controlled Ovarian Stimulation",
+            "short_name": "Ovarian Stimulation",
+            "description": "Daily gonadotropin injections (rFSH/hMG) to stimulate multiple follicular recruitment and egg maturation.",
+            "duration": "8 - 12 Days",
+            "key_actions": ["Daily Hormone Injections", "Serial Folliculometry Scans", "Serum Estradiol Monitoring"]
+        },
+        {
+            "id": "stage_3",
+            "name": "Ovulation Trigger & Pre-Retrieval Prep",
+            "short_name": "Follicle Trigger",
+            "description": "Administration of hCG or GnRH agonist trigger shot precisely 34-36 hours prior to planned retrieval.",
+            "duration": "Precisely timed (36h)",
+            "key_actions": ["Trigger Injection Timing", "Strict Fasting Guidelines", "Anesthesia Clearance"]
+        },
+        {
+            "id": "stage_4",
+            "name": "Oocyte Retrieval & Semen Collection",
+            "short_name": "Egg Retrieval (OPU)",
+            "description": "Ultrasound-guided transvaginal aspiration of mature oocytes under light intravenous sedation.",
+            "duration": "Day 0",
+            "key_actions": ["Aspiration Procedure (15-20 min)", "Oocyte Identification", "Sperm Washing & Prep"]
+        },
+        {
+            "id": "stage_5",
+            "name": "Fertilization & Embryo Culture",
+            "short_name": "Fertilization & Culture",
+            "description": "ICSI or conventional insemination followed by extended incubation to Day 3 or Day 5/6 blastocyst stage.",
+            "duration": "Days 1 - 6",
+            "key_actions": ["Fertilization Check (2PN)", "Embryo Grading Updates", "Time-Lapse Incubator Monitoring"]
+        },
+        {
+            "id": "stage_6",
+            "name": "Embryo Transfer",
+            "short_name": "Embryo Transfer",
+            "description": "Catheter-guided placement of top-graded blastocyst into uterine cavity under abdominal ultrasound visualization.",
+            "duration": "Day 3 or Day 5",
+            "key_actions": ["Full Bladder Preparation", "Gentle Catheter Placement", "Post-Transfer Rest & Discharge"]
+        },
+        {
+            "id": "stage_7",
+            "name": "Luteal Phase Support & Pregnancy Confirmation",
+            "short_name": "Luteal Support & Test",
+            "description": "Progesterone and estrogen supplementation to support endometrial receptivity, followed by serum Beta-hCG blood test.",
+            "duration": "10 - 14 Days Post-Transfer",
+            "key_actions": ["Micronized Progesterone Support", "Hydration & Gentle Activity", "Quantitative Serum Beta-hCG Draw"]
+        }
+    ]
+
+    current_stage_name = patient_profile.get("treatment_stage") or "Controlled Ovarian Stimulation"
+
+    return {
+        "patient": patient_profile,
+        "current_stage": current_stage_name,
+        "stages": standard_stages,
+        "total_events": len(events),
+        "events": events
+    }
+
 @router.get("/{patient_id}", summary="Get single patient 360 profile")
 async def get_patient_details(
     patient_id: str,
-    current_user: dict = Depends(require_roles(["doctor", "staff", "admin"])),
+    current_user: dict = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
-    raw = await db.patients.find_one({"patient_id": patient_id.strip()})
+    role = current_user.get("role")
+    target_id = patient_id.strip()
+
+    if role == "patient":
+        user_pat_id = current_user.get("patient_id")
+        if not user_pat_id:
+            pat = await db.patients.find_one({"user_id": str(current_user["_id"])})
+            if pat:
+                user_pat_id = pat.get("patient_id")
+        if target_id != user_pat_id and target_id != "me":
+            raise HTTPException(status_code=403, detail="Access denied: Cannot view other patients")
+        target_id = user_pat_id
+
+    raw = await db.patients.find_one({"patient_id": target_id})
     if not raw:
         # Check by _id fallback
-        raw = await db.patients.find_one({"mrn": patient_id.strip()})
+        raw = await db.patients.find_one({"mrn": target_id})
     if not raw:
         raise HTTPException(status_code=404, detail="Patient profile not found")
 
@@ -245,7 +472,7 @@ async def create_medical_record(
 @router.get("/{patient_id}/timeline", summary="Patient 360 Visual Timeline Engine")
 async def get_patient_timeline(
     patient_id: str,
-    current_user: dict = Depends(require_roles(["doctor", "staff", "admin"])),
+    current_user: dict = Depends(get_current_user),
     db: AsyncIOMotorDatabase = Depends(get_db)
 ):
     """
@@ -255,10 +482,25 @@ async def get_patient_timeline(
     - Documents indexed
     - Follow-ups created and completed
     """
+    role = current_user.get("role")
+    target_id = patient_id.strip()
+
+    if role == "patient":
+        user_pat_id = current_user.get("patient_id")
+        if not user_pat_id:
+            pat = await db.patients.find_one({"user_id": str(current_user["_id"])})
+            if pat:
+                user_pat_id = pat.get("patient_id")
+        if target_id != user_pat_id and target_id != "me":
+            raise HTTPException(status_code=403, detail="Access denied")
+        target_id = user_pat_id
+    elif role not in ["doctor", "staff", "admin"]:
+        raise HTTPException(status_code=403, detail="Unauthorized")
+
     events = []
 
     # 1. Medical records
-    raw_recs = await db.medical_records.find({"patient_id": patient_id.strip()}).to_list(100)
+    raw_recs = await db.medical_records.find({"patient_id": target_id}).to_list(100)
     for r in raw_recs:
         dec = decrypt_doc(r, "medical_records")
         events.append({
@@ -275,7 +517,7 @@ async def get_patient_timeline(
         })
 
     # 2. Appointments
-    raw_appts = await db.appointments.find({"patient_id": patient_id.strip()}).to_list(50)
+    raw_appts = await db.appointments.find({"patient_id": target_id}).to_list(50)
     for a in raw_appts:
         dec = decrypt_doc(a, "appointments")
         events.append({
@@ -291,7 +533,10 @@ async def get_patient_timeline(
         })
 
     # 3. Documents
-    raw_docs = await db.documents.find({"patient_id": patient_id.strip()}).to_list(50)
+    doc_filter = {"patient_id": target_id}
+    if role == "patient":
+        doc_filter["approved_for_patient"] = True
+    raw_docs = await db.documents.find(doc_filter).to_list(50)
     for d in raw_docs:
         dec = decrypt_doc(d, "documents")
         events.append({
@@ -306,7 +551,7 @@ async def get_patient_timeline(
         })
 
     # 4. Follow-ups
-    raw_fols = await db.followups.find({"patient_id": patient_id.strip()}).to_list(50)
+    raw_fols = await db.followups.find({"patient_id": target_id}).to_list(50)
     for f in raw_fols:
         dec = decrypt_doc(f, "followups")
         events.append({
@@ -324,7 +569,7 @@ async def get_patient_timeline(
     events.sort(key=lambda x: str(x.get("timestamp") or ""), reverse=True)
 
     return {
-        "patient_id": patient_id,
+        "patient_id": target_id,
         "total_events": len(events),
         "events": events
     }

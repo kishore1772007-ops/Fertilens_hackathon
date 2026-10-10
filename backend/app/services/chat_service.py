@@ -1,6 +1,6 @@
 """
 Clinical Chat Service managing session state, patient resolution, RAG retrieval,
-and prompt injection defense.
+medical records synthesis, and prompt injection defense.
 """
 import uuid
 import re
@@ -27,8 +27,8 @@ async def resolve_patient_for_query(
     """
     Resolves patient record based on user role and message content:
     - If user is patient: strictly return their own record.
-    - If user is clinician: check explicit_patient_id or scan query for patient ID (P1001-P1007)
-      or patient names via blind index search.
+    - If user is clinician: check explicit_patient_id, scan for ID (P1001-P1007, PAT-xxx),
+      check blind index tokens, or scan decrypted names.
     """
     user_role = user.get("role")
 
@@ -45,16 +45,21 @@ async def resolve_patient_for_query(
         return None
 
     # 2. Clinician Role: check explicit ID first
-    if explicit_patient_id:
+    if explicit_patient_id and explicit_patient_id.strip():
         raw = await db.patients.find_one({"patient_id": explicit_patient_id.strip().upper()})
         if raw:
             return decrypt_doc(raw, "patients")
 
-    # 3. Check for ID pattern (e.g. P1001, PAT-1001) in message
-    id_match = re.search(r'\b(P100[1-7]|PAT-\d+)\b', message, re.IGNORECASE)
+    # 3. Check for ID pattern (e.g. P1001-P1007, PAT-1001) in message
+    id_match = re.search(r'\b(P\d{4}|PAT-\d+|MRN-[A-Za-z0-9-]+)\b', message, re.IGNORECASE)
     if id_match:
         found_id = id_match.group(1).upper()
-        raw = await db.patients.find_one({"patient_id": found_id})
+        raw = await db.patients.find_one({
+            "$or": [
+                {"patient_id": found_id},
+                {"mrn": found_id}
+            ]
+        })
         if raw:
             return decrypt_doc(raw, "patients")
 
@@ -68,6 +73,19 @@ async def resolve_patient_for_query(
             if raw:
                 return decrypt_doc(raw, "patients")
 
+    # 5. Fallback exhaustive name scan across patients
+    all_raw_pats = await db.patients.find({}).to_list(50)
+    for rp in all_raw_pats:
+        dec = decrypt_doc(rp, "patients")
+        first_name = (dec.get("first_name") or "").lower()
+        last_name = (dec.get("last_name") or "").lower()
+        full_name = f"{first_name} {last_name}".strip()
+        
+        if (first_name and first_name in cleaned_msg.lower()) or \
+           (last_name and last_name in cleaned_msg.lower()) or \
+           (full_name and full_name in cleaned_msg.lower()):
+            return dec
+
     return None
 
 async def handle_chat_message(
@@ -80,7 +98,7 @@ async def handle_chat_message(
     """
     Processes chat message:
     1. Resolve session & patient
-    2. Retrieve relevant document chunks (RAG)
+    2. Retrieve relevant document chunks (RAG) + Medical Records + Uploaded Documents
     3. Call LLM Service
     4. Store encrypted messages
     5. Audit log
@@ -97,7 +115,7 @@ async def handle_chat_message(
 
     # Patient security boundary: if patient asks about someone else, prevent cross-patient leak
     if is_patient_mode:
-        other_id_match = re.search(r'\bP100[1-7]\b', message, re.IGNORECASE)
+        other_id_match = re.search(r'\bP\d{4}\b', message, re.IGNORECASE)
         if other_id_match and patient and other_id_match.group(0).upper() != patient.get("patient_id"):
             reply = (
                 "🔒 **Security Boundary**: As a patient, you are only authorized to access your own "
@@ -111,16 +129,23 @@ async def handle_chat_message(
                 "sources": []
             }
 
-    # Retrieve RAG chunks
+    # Retrieve RAG chunks, Medical Records, and Uploaded Documents
     rag_chunks = []
+    medical_records = []
+    documents = []
+    cohort_patients = []
     sources = []
+
     if patient:
         p_id = patient.get("patient_id")
         chunk_filter: Dict[str, Any] = {"patient_id": p_id}
+        doc_filter: Dict[str, Any] = {"patient_id": p_id}
         if is_patient_mode:
             chunk_filter["approved_for_patient"] = True
+            doc_filter["approved_for_patient"] = True
 
-        raw_chunks = await db.document_chunks.find(chunk_filter).limit(4).to_list(4)
+        # 1. RAG Vector chunks
+        raw_chunks = await db.document_chunks.find(chunk_filter).limit(6).to_list(6)
         for rc in raw_chunks:
             decrypted_chunk = decrypt_doc(rc, "document_chunks")
             rag_chunks.append(decrypted_chunk)
@@ -130,11 +155,48 @@ async def handle_chat_message(
                 "page_number": decrypted_chunk.get("page_number")
             })
 
+        # 2. Medical Records (Lab panels, scans, consultations)
+        raw_meds = await db.medical_records.find({"patient_id": p_id}).sort("date", -1).limit(10).to_list(10)
+        for rm in raw_meds:
+            medical_records.append(decrypt_doc(rm, "medical_records"))
+
+        # 3. Uploaded Documents
+        raw_docs = await db.documents.find(doc_filter).sort("created_at", -1).limit(10).to_list(10)
+        for rd in raw_docs:
+            dec_d = decrypt_doc(rd, "documents")
+            documents.append(dec_d)
+            if not any(s["document_title"] == dec_d.get("title") for s in sources):
+                sources.append({
+                    "chunk_id": dec_d.get("document_id"),
+                    "document_title": dec_d.get("title"),
+                    "page_number": dec_d.get("page_count", 1)
+                })
+
+        # 4. Scheduled Clinical Appointments
+        raw_appts = await db.appointments.find({"patient_id": p_id}).sort("start_time", 1).limit(10).to_list(10)
+        appointments = [decrypt_doc(a, "appointments") for a in raw_appts]
+
+        # 5. Clinical Follow-ups & Medication Instructions
+        raw_fols = await db.followups.find({"patient_id": p_id}).sort("due_date", 1).limit(10).to_list(10)
+        followups = [decrypt_doc(f, "followups") for f in raw_fols]
+    else:
+        appointments = []
+        followups = []
+        # If no single patient resolved, load hospital cohort for broad clinical queries
+        if not is_patient_mode:
+            all_raw_pats = await db.patients.find({}).limit(20).to_list(20)
+            cohort_patients = [decrypt_doc(p, "patients") for p in all_raw_pats]
+
     # Generate reply
     reply = await llm_service.generate_clinical_response(
         prompt=message,
         patient_context=patient,
         rag_chunks=rag_chunks,
+        medical_records=medical_records,
+        documents=documents,
+        appointments=appointments,
+        followups=followups,
+        cohort_patients=cohort_patients,
         is_patient_mode=is_patient_mode
     )
 

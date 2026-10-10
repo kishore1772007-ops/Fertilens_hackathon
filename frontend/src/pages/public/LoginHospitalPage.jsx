@@ -18,7 +18,7 @@ export default function LoginHospitalPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [validationErrors, setValidationErrors] = useState({});
-  const [showDemoAccounts, setShowDemoAccounts] = useState(false);
+  const [showDemoAccounts, setShowDemoAccounts] = useState(true);
 
   useEffect(() => {
     if (!authLoading && isAuthenticated) {
@@ -76,30 +76,30 @@ export default function LoginHospitalPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-teal-50/20 to-sky-50/30 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-[#f6f8fe] flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 font-sans">
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <Link
           to={ROUTES.LOGIN_CHOOSER}
-          className="inline-flex items-center gap-1.5 text-xs text-teal-700 hover:text-teal-900 font-medium mb-6 bg-white px-3 py-1.5 rounded-full border border-teal-100 shadow-sm"
+          className="inline-flex items-center gap-1.5 text-xs text-blue-700 hover:text-blue-900 font-bold mb-6 bg-white px-4 py-2 rounded-full border border-blue-100 shadow-2xs transition-all active:scale-95"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
           <span>Switch Portal</span>
         </Link>
-        <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-teal-600 text-white shadow-lg shadow-teal-200 mb-3 mx-auto">
-          <Stethoscope className="w-6 h-6" />
+        <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/20 mb-3 mx-auto">
+          <Stethoscope className="w-7 h-7" />
         </div>
-        <h1 className="text-2xl font-extrabold tracking-tight text-slate-900">
+        <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-[#0f172a]">
           Hospital Care Team Login
         </h1>
         <p className="mt-1 text-xs text-slate-500 font-medium">
-          Reproductive Endocrinology, ART Lab, & Clinical Administration
+          Reproductive Endocrinology, ART Lab, &amp; Clinical Administration
         </p>
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white py-8 px-6 sm:px-10 shadow-xl shadow-slate-200/60 rounded-3xl border border-slate-100">
+        <div className="bg-white py-8 px-6 sm:px-10 shadow-[0_4px_24px_rgba(37,99,235,0.06)] rounded-3xl border border-blue-100">
           {error && (
-            <div className="mb-6 p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-800 text-sm flex items-start gap-3">
+            <div className="mb-6 p-4 rounded-2xl bg-rose-50 border border-rose-200 text-rose-800 text-xs sm:text-sm font-medium flex items-start gap-3">
               <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
               <span>{error}</span>
             </div>
@@ -141,26 +141,24 @@ export default function LoginHospitalPage() {
             />
 
             <div className="pt-2">
-              <Button
+              <button
                 type="submit"
-                variant="primary"
-                size="lg"
-                loading={loading}
-                className="w-full text-base font-semibold py-3 bg-teal-600 hover:bg-teal-700"
+                disabled={loading}
+                className="w-full py-3 px-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-[0_4px_16px_rgba(37,99,235,0.3)] active:scale-95 transition-all disabled:opacity-50"
               >
-                Sign In to Hospital Portal
-              </Button>
+                {loading ? 'Signing in...' : 'Sign In to Hospital Portal'}
+              </button>
             </div>
           </form>
 
-          {/* Collapsible Demo Accounts Box */}
+          {/* Quick Demo Accounts Selection Box */}
           <div className="mt-6 pt-5 border-t border-slate-100">
             <button
               type="button"
               onClick={() => setShowDemoAccounts(!showDemoAccounts)}
-              className="w-full flex items-center justify-between text-xs font-semibold text-slate-600 hover:text-teal-700 py-1"
+              className="w-full flex items-center justify-between text-xs font-bold text-blue-700 hover:text-blue-900 py-1"
             >
-              <span>Demo accounts (synthetic data)</span>
+              <span>Demo Accounts (1-Click Fill)</span>
               {showDemoAccounts ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
 
@@ -169,33 +167,25 @@ export default function LoginHospitalPage() {
                 <button
                   type="button"
                   onClick={() => handleQuickFill('dr.arjun@fertilens.ai', 'Doctor@12345')}
-                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-300 text-left transition-all"
+                  className="p-3 rounded-xl bg-blue-50/70 hover:bg-blue-100/80 border border-blue-200/70 text-left transition-all"
                 >
-                  <span className="font-semibold block text-teal-800">Dr. Arjun Mehta (REI)</span>
-                  <span className="text-[11px] text-slate-500">dr.arjun@fertilens.ai &bull; Doctor@12345</span>
+                  <span className="font-bold block text-blue-900">👨‍⚕️ Dr. Arjun Mehta (REI Specialist)</span>
+                  <span className="text-[11px] text-blue-700">dr.arjun@fertilens.ai &bull; Doctor@12345</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickFill('dr.lakshmi@fertilens.ai', 'Doctor@12345')}
-                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-300 text-left transition-all"
+                  className="p-3 rounded-xl bg-blue-50/70 hover:bg-blue-100/80 border border-blue-200/70 text-left transition-all"
                 >
-                  <span className="font-semibold block text-teal-800">Dr. Lakshmi Krishnan (IVF)</span>
-                  <span className="text-[11px] text-slate-500">dr.lakshmi@fertilens.ai &bull; Doctor@12345</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleQuickFill('admin@fertilens.ai', 'Admin@12345')}
-                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-300 text-left transition-all"
-                >
-                  <span className="font-semibold block text-slate-800">System Admin</span>
-                  <span className="text-[11px] text-slate-500">admin@fertilens.ai &bull; Admin@12345</span>
+                  <span className="font-bold block text-blue-900">👩‍⚕️ Dr. Lakshmi Krishnan (IVF Lead)</span>
+                  <span className="text-[11px] text-blue-700">dr.lakshmi@fertilens.ai &bull; Doctor@12345</span>
                 </button>
                 <button
                   type="button"
                   onClick={() => handleQuickFill('staff.elena@fertilens.ai', 'Staff@12345')}
-                  className="p-2.5 rounded-xl bg-slate-50 hover:bg-teal-50 border border-slate-200 hover:border-teal-300 text-left transition-all"
+                  className="p-3 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-left transition-all"
                 >
-                  <span className="font-semibold block text-slate-800">Clinical Coordinator</span>
+                  <span className="font-bold block text-slate-800">👩‍💼 Elena Rostova (Care Coordinator)</span>
                   <span className="text-[11px] text-slate-500">staff.elena@fertilens.ai &bull; Staff@12345</span>
                 </button>
               </div>

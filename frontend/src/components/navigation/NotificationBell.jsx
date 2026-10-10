@@ -20,7 +20,7 @@ export function NotificationBell({ isPatientPortal = false }) {
     >
       <Bell className="w-5 h-5" />
       {unreadCount > 0 && (
-        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-teal-500 ring-2 ring-white" />
+        <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-blue-600 ring-2 ring-white" />
       )}
     </button>
   );

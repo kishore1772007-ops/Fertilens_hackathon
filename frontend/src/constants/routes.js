@@ -17,6 +17,7 @@ export const ROUTES = {
     PATIENT_DETAILS: '/hospital/patients/:patientId',
     PATIENT_RECORDS: '/hospital/patients/:patientId/records',
     PATIENT_UPLOAD: '/hospital/patients/:patientId/upload',
+    UPLOAD: '/hospital/upload',
     PATIENT_AI_HISTORY: '/hospital/patients/:patientId/ai-history',
     PATIENT_TIMELINE: '/hospital/patients/:patientId/timeline',
     PATIENT_BRIEF: '/hospital/patients/:patientId/brief',

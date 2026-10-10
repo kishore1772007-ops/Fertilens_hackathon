@@ -39,7 +39,7 @@ export const Input = forwardRef(function Input(
           } ${endAdornment ? 'pr-10' : 'pr-3'} py-2 ${
             error
               ? 'border-rose-300 text-rose-900 focus:border-rose-500 focus:ring-rose-200'
-              : 'border-slate-300 text-slate-900 focus:border-teal-500 focus:ring-teal-200'
+              : 'border-slate-300 text-slate-900 focus:border-blue-500 focus:ring-blue-200'
           } ${className}`}
           {...props}
         />

@@ -4,7 +4,7 @@ import { Loader2 } from 'lucide-react';
 export function Button({
   children,
   type = 'button',
-  variant = 'primary', // primary, secondary, danger, outline, ghost
+  variant = 'primary', // primary, secondary, danger, outline, ghost, soft
   size = 'md', // sm, md, lg
   loading = false,
   disabled = false,
@@ -13,20 +13,21 @@ export function Button({
   onClick,
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  const baseStyles = 'inline-flex items-center justify-center font-bold rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:active:scale-100';
 
   const variants = {
-    primary: 'bg-teal-600 hover:bg-teal-700 text-white focus:ring-teal-500 shadow-sm',
-    secondary: 'bg-slate-800 hover:bg-slate-900 text-white focus:ring-slate-700 shadow-sm',
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 shadow-md shadow-blue-500/20',
+    secondary: 'bg-slate-900 hover:bg-slate-800 text-white focus:ring-slate-700 shadow-sm',
     danger: 'bg-rose-600 hover:bg-rose-700 text-white focus:ring-rose-500 shadow-sm',
-    outline: 'border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 focus:ring-teal-500',
+    outline: 'border border-blue-200 bg-white hover:bg-blue-50/60 text-blue-700 focus:ring-blue-500 shadow-2xs',
     ghost: 'text-slate-600 hover:bg-slate-100 hover:text-slate-900 focus:ring-slate-400',
+    soft: 'bg-blue-50 hover:bg-blue-100/80 text-blue-700 border border-blue-200/70 focus:ring-blue-500',
   };
 
   const sizes = {
-    sm: 'text-xs px-2.5 py-1.5 gap-1.5',
-    md: 'text-sm px-4 py-2 gap-2',
-    lg: 'text-base px-5 py-2.5 gap-2.5',
+    sm: 'text-xs px-3.5 py-1.5 gap-1.5',
+    md: 'text-xs sm:text-sm px-4 py-2.5 gap-2',
+    lg: 'text-sm sm:text-base px-6 py-3 gap-2.5',
   };
 
   return (

@@ -3,9 +3,9 @@ import { Loader2 } from 'lucide-react';
 
 export function Loader({ size = 'md', message = 'Loading...', fullScreen = false }) {
   const sizeMap = {
-    sm: 'w-4 h-4 text-teal-600',
-    md: 'w-8 h-8 text-teal-600',
-    lg: 'w-12 h-12 text-teal-600',
+    sm: 'w-4 h-4 text-blue-600',
+    md: 'w-8 h-8 text-blue-600',
+    lg: 'w-12 h-12 text-blue-600',
   };
 
   const content = (

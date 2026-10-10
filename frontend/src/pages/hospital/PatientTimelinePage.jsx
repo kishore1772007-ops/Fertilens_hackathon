@@ -159,14 +159,14 @@ export default function PatientTimelinePage() {
         <div className="flex items-center gap-3">
           <Link
             to={`/hospital/patients/${patientId}`}
-            className="p-2 border border-slate-200 rounded-xl hover:bg-slate-100 text-slate-600 transition"
+            className="p-2.5 border border-slate-200 rounded-full hover:bg-slate-100 text-slate-600 transition"
             title="Back to patient 360"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
             <h1 className="text-2xl font-bold tracking-tight text-slate-900 flex items-center gap-2.5">
-              <History className="w-7 h-7 text-teal-600" />
+              <History className="w-7 h-7 text-blue-600" />
               Patient 360 Visual Timeline: {patient?.first_name} {patient?.last_name} ({patientId})
             </h1>
             <p className="text-sm text-slate-500 mt-0.5">
@@ -179,14 +179,14 @@ export default function PatientTimelinePage() {
           <button
             onClick={handleRefresh}
             disabled={refreshing}
-            className="p-2 border border-slate-200 rounded-xl hover:bg-slate-50 text-slate-600 transition"
+            className="p-2.5 border border-slate-200 rounded-full hover:bg-slate-50 text-slate-600 transition"
             title="Refresh timeline"
           >
-            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-teal-600' : ''}`} />
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin text-blue-600' : ''}`} />
           </button>
           <Link
             to={`/hospital/patients/${patientId}/records`}
-            className="px-4 py-2 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium rounded-xl shadow-sm transition inline-flex items-center gap-2"
+            className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 active:scale-[0.98] text-white text-sm font-semibold rounded-full shadow-md shadow-blue-500/20 transition inline-flex items-center gap-2"
           >
             <FileText className="w-4 h-4" />
             Medical Records
@@ -196,14 +196,14 @@ export default function PatientTimelinePage() {
 
       {/* Patient Summary Header Card */}
       {patient && (
-        <div className="bg-gradient-to-r from-teal-900 via-slate-900 to-slate-800 text-white rounded-2xl p-6 shadow-md border border-teal-800/50">
+        <div className="bg-gradient-to-r from-blue-900 via-slate-900 to-slate-800 text-white rounded-3xl p-6 sm:p-7 shadow-lg border border-blue-800/40">
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-3">
                 <span className="text-xl font-bold">
                   {patient.first_name} {patient.last_name}
                 </span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-teal-500/20 text-teal-300 font-semibold border border-teal-400/30">
+                <span className="text-xs px-3 py-0.5 rounded-full bg-blue-500/20 text-blue-300 font-semibold border border-blue-400/30">
                   {patient.current_ivf_stage || 'Active Treatment'}
                 </span>
               </div>
@@ -212,19 +212,19 @@ export default function PatientTimelinePage() {
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10">
-                <span className="text-teal-200 block text-[10px] uppercase font-bold tracking-wider">AMH Level</span>
+            <div className="flex flex-wrap items-center gap-3 text-xs">
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2.5 border border-white/10">
+                <span className="text-blue-200 block text-[10px] uppercase font-bold tracking-wider">AMH Level</span>
                 <span className="text-base font-bold text-white">{patient.baseline_amh || '2.4'} ng/mL</span>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10">
-                <span className="text-teal-200 block text-[10px] uppercase font-bold tracking-wider">Antral Follicles</span>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2.5 border border-white/10">
+                <span className="text-blue-200 block text-[10px] uppercase font-bold tracking-wider">Antral Follicles</span>
                 <span className="text-base font-bold text-white">{patient.antral_follicle_count || '14'} AFC</span>
               </div>
 
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl px-3 py-2 border border-white/10">
-                <span className="text-teal-200 block text-[10px] uppercase font-bold tracking-wider">Total Events</span>
+              <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2.5 border border-white/10">
+                <span className="text-blue-200 block text-[10px] uppercase font-bold tracking-wider">Total Events</span>
                 <span className="text-base font-bold text-white">{totalEvents} Tracked</span>
               </div>
             </div>
@@ -233,15 +233,15 @@ export default function PatientTimelinePage() {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="bg-white rounded-2xl border border-slate-200 p-4 shadow-sm flex flex-col md:flex-row gap-3">
+      <div className="bg-white rounded-2xl border border-blue-100/80 p-4 shadow-sm flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search timeline events, clinical observations, medications..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 border border-slate-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-teal-500"
+            className="w-full pl-9 pr-4 py-2.5 border border-slate-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
         </div>
 
@@ -256,10 +256,10 @@ export default function PatientTimelinePage() {
             <button
               key={tab.key}
               onClick={() => setTypeFilter(tab.key)}
-              className={`px-3 py-1.5 text-xs font-medium rounded-xl transition ${
+              className={`px-4 py-1.5 text-xs font-semibold rounded-full transition ${
                 typeFilter === tab.key
-                  ? 'bg-teal-600 text-white shadow-sm'
-                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'bg-white hover:bg-blue-50/50 text-slate-700 border border-slate-200'
               }`}
             >
               {tab.label}
@@ -271,11 +271,11 @@ export default function PatientTimelinePage() {
       {/* Vertical Interactive Timeline */}
       {loading ? (
         <div className="py-20 text-center">
-          <RefreshCw className="w-8 h-8 text-teal-600 animate-spin mx-auto mb-3" />
+          <RefreshCw className="w-8 h-8 text-blue-600 animate-spin mx-auto mb-3" />
           <p className="text-slate-500 text-sm">Synthesizing clinical journey timeline...</p>
         </div>
       ) : filteredEvents.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-slate-200 p-12 text-center shadow-sm">
+        <div className="bg-white rounded-3xl border border-blue-100/80 p-12 text-center shadow-sm">
           <History className="w-12 h-12 text-slate-300 mx-auto mb-3" />
           <h3 className="text-base font-semibold text-slate-800">No events matched</h3>
           <p className="text-sm text-slate-500 mt-1 max-w-md mx-auto">
@@ -285,7 +285,7 @@ export default function PatientTimelinePage() {
           </p>
         </div>
       ) : (
-        <div className="relative pl-6 sm:pl-8 before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-slate-200 space-y-6">
+        <div className="relative pl-6 sm:pl-8 before:absolute before:left-3 sm:before:left-4 before:top-3 before:bottom-3 before:w-0.5 before:bg-blue-200 space-y-6">
           {filteredEvents.map((ev) => {
             const config = getEventBadge(ev.event_type);
             const Icon = config.icon;
@@ -301,7 +301,7 @@ export default function PatientTimelinePage() {
                 </div>
 
                 {/* Event Card */}
-                <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition">
+                <div className="bg-white rounded-3xl border border-blue-100/80 p-6 shadow-sm hover:shadow-md transition">
                   <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
                     <div className="space-y-1">
                       <div className="flex flex-wrap items-center gap-2">
@@ -326,7 +326,7 @@ export default function PatientTimelinePage() {
 
                     <button
                       onClick={() => toggleExpand(ev.id)}
-                      className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg self-end sm:self-start transition"
+                      className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-full self-end sm:self-start transition"
                     >
                       {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                     </button>
@@ -341,21 +341,21 @@ export default function PatientTimelinePage() {
                   {isExpanded && (
                     <div className="mt-4 pt-4 border-t border-slate-100 space-y-3 text-xs animate-in fade-in duration-150">
                       {ev.findings && (
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div className="bg-blue-50/40 p-3.5 rounded-2xl border border-blue-100">
                           <span className="font-semibold text-slate-800 block mb-0.5">Clinical Findings:</span>
                           <p className="text-slate-600 leading-relaxed">{ev.findings}</p>
                         </div>
                       )}
 
                       {ev.plan && (
-                        <div className="bg-teal-50/50 p-3 rounded-xl border border-teal-100">
-                          <span className="font-semibold text-teal-900 block mb-0.5">Action Plan:</span>
-                          <p className="text-teal-800 leading-relaxed">{ev.plan}</p>
+                        <div className="bg-blue-50/60 p-3.5 rounded-2xl border border-blue-200/70">
+                          <span className="font-semibold text-blue-900 block mb-0.5">Action Plan:</span>
+                          <p className="text-blue-800 leading-relaxed">{ev.plan}</p>
                         </div>
                       )}
 
                       {ev.notes && (
-                        <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                        <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-100">
                           <span className="font-semibold text-slate-800 block mb-0.5">Visit Notes:</span>
                           <p className="text-slate-600 leading-relaxed">{ev.notes}</p>
                         </div>
@@ -366,7 +366,7 @@ export default function PatientTimelinePage() {
                           {ev.tags.map((t, idx) => (
                             <span
                               key={idx}
-                              className="text-[11px] px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 border border-slate-200"
+                              className="text-[11px] px-2.5 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200"
                             >
                               #{t}
                             </span>

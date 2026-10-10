@@ -202,9 +202,10 @@ async def test_refresh_rotation_and_reuse_detection(client: AsyncClient):
     assert new_refresh_token != initial_refresh_token
 
     # Present old token -> triggers reuse alert
+    client.cookies.clear()
     reuse_resp = await client.post(
         "/api/v1/auth/refresh",
-        cookies={"refresh_token": initial_refresh_token}
+        headers={"Cookie": f"refresh_token={initial_refresh_token}"}
     )
     assert reuse_resp.status_code == 401
     assert "token reuse detected" in reuse_resp.json()["detail"].lower()

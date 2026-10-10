@@ -11,6 +11,7 @@ import {
   ShieldCheck,
   UserCog,
   FileText,
+  FileUp,
   Heart,
   X,
   Stethoscope,
@@ -27,6 +28,7 @@ export function Sidebar({ isOpen, onClose, isPatientPortal = false }) {
     { label: 'Overview', to: ROUTES.HOSPITAL.DASHBOARD, icon: LayoutDashboard },
     { label: 'AI Clinical Assistant', to: ROUTES.HOSPITAL.ASSISTANT, icon: Sparkles },
     { label: 'Patient Roster', to: ROUTES.HOSPITAL.PATIENTS, icon: Users },
+    { label: 'Upload Scans & Labs', to: ROUTES.HOSPITAL.UPLOAD, icon: FileUp },
     { label: 'Advanced Search', to: ROUTES.HOSPITAL.PATIENT_SEARCH, icon: Search },
     { label: 'Pending Queue', to: ROUTES.HOSPITAL.PENDING, icon: CheckSquare },
     { label: 'Appointments', to: ROUTES.HOSPITAL.APPOINTMENTS, icon: Calendar },
@@ -71,12 +73,12 @@ export function Sidebar({ isOpen, onClose, isPatientPortal = false }) {
         {/* Brand Header */}
         <div className="h-16 flex items-center justify-between px-5 border-b border-slate-100">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-teal-600 flex items-center justify-center text-white shadow-sm shadow-teal-200">
+            <div className="w-9 h-9 rounded-xl bg-blue-600 flex items-center justify-center text-white shadow-sm shadow-blue-500/20">
               <Stethoscope className="w-5 h-5" />
             </div>
             <div>
               <span className="font-bold text-base tracking-tight text-slate-900">
-                FertiLens <span className="text-teal-600">AI</span>
+                FertiLens <span className="text-blue-600">AI</span>
               </span>
               <span className="block text-[10px] uppercase font-semibold text-slate-400 tracking-wider">
                 {isPatientPortal ? 'Patient Care Portal' : 'Clinical ART Platform'}
@@ -105,11 +107,9 @@ export function Sidebar({ isOpen, onClose, isPatientPortal = false }) {
                 to={item.to}
                 onClick={onClose}
                 className={({ isActive }) =>
-                  `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                  `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
                     isActive
-                      ? isPatientPortal
-                        ? 'bg-sky-50 text-sky-700 font-semibold'
-                        : 'bg-teal-50 text-teal-700 font-semibold'
+                      ? 'bg-blue-50 text-blue-700 font-bold border border-blue-100/70 shadow-2xs'
                       : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
                   }`
                 }
@@ -135,10 +135,10 @@ export function Sidebar({ isOpen, onClose, isPatientPortal = false }) {
                     to={item.to}
                     onClick={onClose}
                     className={({ isActive }) =>
-                      `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
+                      `flex items-center gap-3 px-3.5 py-2.5 rounded-full text-xs font-semibold transition-all ${
                         isActive
-                          ? 'bg-teal-50 text-teal-700 font-semibold'
-                          : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                          ? 'bg-blue-50 text-blue-700 font-bold border border-blue-200/70 shadow-xs'
+                          : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
                       }`
                     }
                   >
@@ -154,7 +154,7 @@ export function Sidebar({ isOpen, onClose, isPatientPortal = false }) {
         {/* User Card in Footer */}
         <div className="p-3.5 border-t border-slate-100 bg-slate-50/50">
           <div className="flex items-center gap-3 px-2 py-1.5">
-            <div className="w-8 h-8 rounded-full bg-teal-100 text-teal-700 font-bold flex items-center justify-center text-xs">
+            <div className="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-xs">
               {user?.full_name?.charAt(0) || user?.email?.charAt(0) || 'U'}
             </div>
             <div className="flex-1 min-w-0">

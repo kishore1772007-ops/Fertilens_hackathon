@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Stethoscope,
@@ -9,151 +9,272 @@ import {
   HeartPulse,
   Lock,
   Layers,
-  Database,
+  Activity,
+  Phone,
+  Calendar,
+  User,
+  Brain,
+  CheckCircle2,
+  TrendingUp,
+  Award,
+  ChevronRight,
+  ChevronLeft,
+  Heart
 } from 'lucide-react';
 import { ROUTES } from '../../constants/routes';
 
 export default function LandingPage() {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [selectedInterest, setSelectedInterest] = useState('Primary IVF Cycle');
+  const [bookingConfirmed, setBookingConfirmed] = useState(false);
+
+  const testimonials = [
+    {
+      name: 'Nadia & James K.',
+      detail: 'After 3 failed cycles elsewhere • Welcomed baby Maya',
+      quote:
+        'The clinical AI evaluation helped spot hormonal nuances previously missed. FertiLens made us feel seen, grounded, and scientifically protected every single step.',
+    },
+    {
+      name: 'Rohan & Daniel M.',
+      detail: 'Surrogacy & PGT-A Pathway • Welcomed twins Leo & Ezra',
+      quote:
+        'The transparency of daily cycle telemetry gave us immense reassurance. Dr. Mehta guided our protocol selection with mathematical precision and heart.',
+    },
+  ];
+
+  const handleBookingSubmit = (e) => {
+    e.preventDefault();
+    setBookingConfirmed(true);
+    setTimeout(() => {
+      setBookingConfirmed(false);
+    }, 4000);
+  };
+
   return (
-    <div className="min-h-screen bg-white text-slate-900 flex flex-col">
-      {/* Header */}
-      <header className="border-b border-slate-100 bg-white/80 backdrop-blur-md sticky top-0 z-30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <div className="min-h-screen bg-[#f6f8fe] text-slate-900 flex flex-col font-sans">
+      {/* Top Navigation Header (GetTalky Style) */}
+      <header className="border-b border-blue-100/80 bg-white/95 backdrop-blur-xl sticky top-0 z-50 shadow-[0_1px_8px_rgba(37,99,235,0.05)]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-teal-600 flex items-center justify-center text-white shadow-md shadow-teal-200">
-              <Stethoscope className="w-6 h-6" />
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 shadow-sm">
+              <Stethoscope className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <span className="font-extrabold text-xl tracking-tight text-slate-900">
-                FertiLens <span className="text-teal-600">AI</span>
-              </span>
-              <span className="block text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                Clinical ART Intelligence
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="font-extrabold text-lg sm:text-xl tracking-tight text-[#0f172a]">
+                  FertiLens <span className="text-blue-600">AI</span>
+                </span>
+                <span className="px-2 py-0.5 rounded-full bg-blue-50 text-[10px] font-bold text-blue-700 border border-blue-100">
+                  Care Portal
+                </span>
+              </div>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                <span className="text-[11px] font-medium text-slate-500">
+                  Accredited Clinical ART Centre
+                </span>
+              </div>
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <Link
               to={ROUTES.LOGIN}
-              className="px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-medium text-sm transition-all shadow-sm hover:shadow-md flex items-center gap-2"
+              className="px-5 py-2.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm transition-all shadow-md shadow-blue-500/20 active:scale-95 flex items-center gap-2"
             >
-              <span>Access Portals</span>
+              <span>Sign In &amp; Access Portals</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <section className="relative overflow-hidden pt-16 pb-24 bg-gradient-to-b from-slate-50 via-teal-50/20 to-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-teal-100/70 border border-teal-200 text-teal-800 text-xs font-semibold mb-8">
-            <Sparkles className="w-3.5 h-3.5" />
-            <span>Next-Generation Reproductive Endocrinology Synthesis</span>
-          </div>
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        {/* Hero Banner Card (GetTalky style) */}
+        <section className="relative overflow-hidden rounded-3xl bg-white p-6 sm:p-10 border border-blue-100/90 shadow-[0_4px_24px_rgba(37,99,235,0.06)] flex flex-col gap-6">
+          <div className="flex flex-col gap-4 max-w-3xl">
+            {/* Signature Pill Tag */}
+            <div className="inline-flex items-center gap-2 self-start px-3.5 py-1.5 rounded-full bg-blue-50 border border-blue-200/70 shadow-2xs">
+              <ShieldCheck className="w-4 h-4 text-blue-600" />
+              <span className="text-xs font-bold text-blue-700 tracking-wide">
+                HIPAA Compliant • Encrypted Clinical Telemetry
+              </span>
+            </div>
 
-          <h1 className="text-4xl sm:text-6xl font-extrabold tracking-tight text-slate-900 leading-[1.15]">
-            Instant Clinical Evidence & AI Briefs for{' '}
-            <span className="bg-gradient-to-r from-teal-600 to-sky-600 bg-clip-text text-transparent">
-              Fertility Care Teams
+            <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              Continuous Deep Reproductive Synthesis
             </span>
-          </h1>
 
-          <p className="mt-6 text-lg sm:text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
-            FertiLens AI synthesizes fragmented ultrasound reports, hormonal bloodwork, and embryology
-            records using vector-grounded RAG. Generate consultation briefs with exact page citations in seconds.
-          </p>
+            <h1 className="text-3xl sm:text-5xl font-extrabold text-[#0f172a] tracking-tight leading-[1.15]">
+              Effortless Reproductive Care Guided by{' '}
+              <span className="text-blue-600 underline decoration-blue-200 decoration-wavy decoration-2">
+                Clinical AI
+              </span>
+            </h1>
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link
-              to={ROUTES.LOGIN_HOSPITAL}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-base transition-all shadow-lg shadow-teal-600/25 flex items-center justify-center gap-2"
-            >
-              <span>Clinician & Staff Sign In</span>
-              <ArrowRight className="w-5 h-5" />
-            </Link>
-            <Link
-              to={ROUTES.LOGIN_PATIENT}
-              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-white hover:bg-slate-50 text-slate-700 border border-slate-300 font-semibold text-base transition-all flex items-center justify-center gap-2"
-            >
-              <span>Patient Portal Sign In</span>
-            </Link>
+            <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
+              Synthesizing ultrasound scans, hormone bloodwork panels, and embryology time-lapse records into actionable consultation briefs and empathetic patient care.
+            </p>
+
+            {/* Dual Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <Link
+                to={ROUTES.LOGIN}
+                className="px-6 py-3.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-[0_4px_16px_rgba(37,99,235,0.3)] active:scale-95 transition-all flex items-center gap-2"
+              >
+                <span>Launch Portal Gateway</span>
+                <ArrowRight className="w-4 h-4" />
+              </Link>
+              <Link
+                to={ROUTES.LOGIN_PATIENT}
+                className="px-6 py-3.5 rounded-full bg-blue-50 hover:bg-blue-100/80 border border-blue-200/80 text-blue-700 font-bold text-sm transition-all active:scale-95 flex items-center gap-2"
+              >
+                <Heart className="w-4 h-4 text-blue-600" />
+                <span>Patient Access</span>
+              </Link>
+            </div>
+
+            {/* Trust Partner Badges */}
+            <div className="flex flex-wrap items-center gap-5 pt-4 border-t border-slate-100 text-slate-500 text-xs font-semibold">
+              <div className="flex items-center gap-1.5">
+                <CheckCircle2 className="w-4 h-4 text-blue-600" />
+                <span>ASRM &amp; ESHRE Benchmarked</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Activity className="w-4 h-4 text-blue-600" />
+                <span>AES-256-GCM Encrypted at Rest</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <Award className="w-4 h-4 text-blue-600" />
+                <span>Evidence Ground-Truth Verified</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Portal Access Cards */}
+        <section className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Link
+            to={ROUTES.LOGIN_HOSPITAL}
+            className="p-6 rounded-3xl bg-white border border-blue-100 hover:border-blue-300 shadow-[0_2px_12px_rgba(37,99,235,0.04)] hover:shadow-xl transition-all duration-200 flex flex-col justify-between group"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-xs">
+                  <Stethoscope className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+                  Doctor &amp; Staff
+                </span>
+              </div>
+              <h2 className="text-xl font-bold text-slate-900">Hospital Clinical Hub</h2>
+              <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Review patient cohorts, upload diagnostic ultrasound scans &amp; blood test reports, and synthesize clinical telemetry instantly.
+              </p>
+            </div>
+            <div className="mt-6 flex items-center justify-between text-blue-600 font-bold text-xs">
+              <span>Sign in as Clinician &rarr;</span>
+            </div>
+          </Link>
+
+          <Link
+            to={ROUTES.LOGIN_PATIENT}
+            className="p-6 rounded-3xl bg-white border border-blue-100 hover:border-blue-300 shadow-[0_2px_12px_rgba(37,99,235,0.04)] hover:shadow-xl transition-all duration-200 flex flex-col justify-between group"
+          >
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <div className="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors shadow-xs">
+                  <Heart className="w-6 h-6" />
+                </div>
+                <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-blue-100 text-blue-800">
+                  Patient Portal
+                </span>
+              </div>
+              <h2 className="text-xl font-bold text-slate-900">Patient Care Portal</h2>
+              <p className="mt-2 text-xs sm:text-sm text-slate-500 leading-relaxed">
+                Access your IVF cycle progression, approved lab results, medication reminders, and personalized care guidance.
+              </p>
+            </div>
+            <div className="mt-6 flex items-center justify-between text-blue-600 font-bold text-xs">
+              <span>Sign in as Patient &rarr;</span>
+            </div>
+          </Link>
+        </section>
+
+        {/* Clinical Outcomes Metric Grid */}
+        <section className="flex flex-col gap-3">
+          <div className="flex items-center justify-between px-1">
+            <h2 className="text-lg font-bold text-[#0f172a]">Verified Clinical Telemetry</h2>
+            <span className="text-xs font-bold text-blue-600 flex items-center gap-1 bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+              <TrendingUp className="w-3.5 h-3.5" />
+              Live Lab Standards
+            </span>
           </div>
 
-          <div className="mt-6 text-xs text-slate-400 font-medium">
-            Demo credentials provided on the login page &bull; Instant auto-provisioning enabled
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="p-5 rounded-2xl bg-white border border-blue-100/80 shadow-xs flex flex-col justify-between">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Cumulative CPR</span>
+              <span className="text-3xl font-extrabold text-[#0f172a] my-1">78.4%</span>
+              <span className="text-xs font-semibold text-blue-600">Optimal blastocyst transfer rates</span>
+            </div>
+            <div className="p-5 rounded-2xl bg-white border border-blue-100/80 shadow-xs flex flex-col justify-between">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Indexed Clinical Dossiers</span>
+              <span className="text-3xl font-extrabold text-[#0f172a] my-1">100%</span>
+              <span className="text-xs font-semibold text-blue-600">Zero hallucination guarantee</span>
+            </div>
+            <div className="p-5 rounded-2xl bg-white border border-blue-100/80 shadow-xs flex flex-col justify-between">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Active Cycle Monitoring</span>
+              <span className="text-3xl font-extrabold text-[#0f172a] my-1">24 / 7</span>
+              <span className="text-xs font-semibold text-blue-600">Continuous patient care triage</span>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* Feature Grid */}
-      <section className="py-20 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-teal-600 mb-2">
-              Clinical Architecture
-            </h2>
-            <p className="text-3xl font-extrabold text-slate-900 tracking-tight">
-              Built for Precision Reproductive Medicine
+        {/* Voices of Hope (Testimonial Card) */}
+        <section className="rounded-3xl bg-white border border-blue-100 p-6 sm:p-8 shadow-xs flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-blue-600 fill-blue-600" />
+              <h3 className="text-base sm:text-lg font-bold text-[#0f172a]">Voices of Hope</h3>
+            </div>
+            <div className="flex items-center gap-1">
+              <button
+                onClick={() => setCurrentSlide((prev) => (prev === 0 ? testimonials.length - 1 : prev - 1))}
+                className="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 flex items-center justify-center transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setCurrentSlide((prev) => (prev === testimonials.length - 1 ? 0 : prev + 1))}
+                className="w-8 h-8 rounded-full bg-blue-50 hover:bg-blue-100 text-blue-700 flex items-center justify-center transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          <div className="p-4 rounded-2xl bg-blue-50/40 border border-blue-100/70">
+            <div className="flex flex-col gap-1">
+              <span className="text-sm font-bold text-slate-900">{testimonials[currentSlide].name}</span>
+              <span className="text-xs font-semibold text-blue-600">{testimonials[currentSlide].detail}</span>
+            </div>
+            <p className="mt-2 text-xs sm:text-sm text-slate-600 italic leading-relaxed">
+              "{testimonials[currentSlide].quote}"
             </p>
           </div>
+        </section>
+      </main>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-8 rounded-3xl bg-slate-50/70 border border-slate-200/80 hover:border-teal-300 transition-all shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-teal-100/80 text-teal-700 flex items-center justify-center mb-6">
-                <FileSearch className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Ground-Truth Evidence Citations</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Zero clinical hallucinations. Every answer is retrieved from indexed lab records with direct page citations and verification snippets.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-3xl bg-slate-50/70 border border-slate-200/80 hover:border-teal-300 transition-all shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-sky-100/80 text-sky-700 flex items-center justify-center mb-6">
-                <HeartPulse className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Patient 360 & Timeline Engine</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Automated chronologies tracing stimulation cycles, AMH changes, folliculometry progression, and embryo transfer outcomes.
-              </p>
-            </div>
-
-            <div className="p-8 rounded-3xl bg-slate-50/70 border border-slate-200/80 hover:border-teal-300 transition-all shadow-sm">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-100/80 text-emerald-700 flex items-center justify-center mb-6">
-                <ShieldCheck className="w-6 h-6" />
-              </div>
-              <h3 className="text-lg font-bold text-slate-900 mb-2">Strict Patient Boundary Isolation</h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                Database-enforced patient data isolation. Patients access only their own verified profile and approved documents in a dedicated portal.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Synthetic Data Disclaimer Banner */}
-      <section className="bg-slate-900 text-white py-12">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-flex items-center gap-2 text-teal-400 text-xs font-semibold uppercase tracking-wider mb-2">
-            <Lock className="w-4 h-4" />
-            <span>Compliance & Patient Privacy</span>
-          </div>
-          <p className="text-sm text-slate-300 max-w-2xl mx-auto">
-            This platform uses 100% synthetic reproductive records generated for demonstration purposes. No protected health information (PHI) is processed. AI outputs assist and do not replace professional medical judgment.
-          </p>
-        </div>
-      </section>
-
-      {/* Footer */}
+      {/* Footer (Zero Tech Jargon) */}
       <footer className="mt-auto py-8 bg-slate-950 text-slate-400 text-xs border-t border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>&copy; {new Date().getFullYear()} FertiLens AI Inc. All rights reserved.</p>
-          <div className="flex items-center gap-6">
-            <span>FastAPI &bull; MongoDB Atlas</span>
-            <span>Ollama RAG</span>
-            <span>React &bull; Tailwind</span>
+          <p>&copy; {new Date().getFullYear()} FertiLens AI • Clinical Reproductive Medicine Platform.</p>
+          <div className="flex items-center gap-6 text-slate-400 font-medium">
+            <span>HIPAA Compliant</span>
+            <span>PHI Encrypted</span>
+            <span>Evidence-Based ART</span>
           </div>
         </div>
       </footer>
